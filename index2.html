@@ -6,12 +6,44 @@
     <meta http-equiv="X-UA-Compatible" content="chrome=1">
     <meta name="description" content="Gasbot : ">
 
-    <link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">
+    <!--<link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">-->
 
     <title>Gasbot</title>
+	
+	
+	<style>
+
+test {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+</style>
+
   </head>
 
   <body>
+  
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script type="text/javascript" src="js/d3/d3.js"></script>
+<script type="text/javascript" src="js/crossfilter/crossfilter.js"></script>
+<script type="text/javascript" src="js/dc/dc.js"></script>
 
     <!-- HEADER -->
     <div id="header_wrap" class="outer">
@@ -27,22 +59,18 @@
     <!-- MAIN CONTENT -->
     <div id="main_content_wrap" class="outer">
       <section id="main_content" class="inner">
-        <h3>
-<a id="welcome-to-github-pages" class="anchor" href="#welcome-to-github-pages" aria-hidden="true"><span class="octicon octicon-link"></span></a>Welcome to GitHub Pages.</h3>
+	   </section>
 
-<p>This automatic page generator is the easiest way to create beautiful pages for all of your projects. Author your page content here using GitHub Flavored Markdown, select a template crafted by a designer, and publish. After your page is generated, you can check out the new branch:</p>
 
 
 
 <!-- MAX CODE HERE -->
 <div id="heatmap"></div>
 <div id="barchart"></div>
-<div id="test">
+<div id="test">yes</div>
 
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
-<script type="text/javascript" src="js/d3/d3.js"></script>
-<script type="text/javascript" src="js/crossfilter/crossfilter.js"></script>
-<script type="text/javascript" src="js/dc/dc.js"></script>
+
+
 
 <script>
 
@@ -50,7 +78,8 @@ var margin = {top: 20, right: 20, bottom: 30, left: 50},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-var parseDate = d3.time.format("%Y-%m-%dT%H:%m:%S.%LZ").parse;
+//var parsetimestamp = d3.time.format("%Y-%m-%dT%H:%M:%SZ").parse();
+var parsetimestamp = d3.time.format("%Y-%m-%dT%H:%M:%SZ").parse;
 
 var x = d3.time.scale()
     .range([0, width]);
@@ -67,7 +96,7 @@ var yAxis = d3.svg.axis()
     .orient("left");
 
 var line = d3.svg.line()
-    .x(function(d) { return x(d.date); })
+    .x(function(d) { return x(d.timestamp); })
     .y(function(d) { return y(d.temp); });
 
 var svg = d3.select("body").append("svg")
@@ -78,11 +107,17 @@ var svg = d3.select("body").append("svg")
 
 d3.json("https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5.json", function(error, data) {
   data.forEach(function(d) {
-    d.date = parseDate(d.date);
+	console.log("test");
+	console.log(Date.parse(d.timestamp));
+	d.timestamp = Date.parse(d.timestamp);
+    //d.timestamp = parsetimestamp(d.timestamp);
+	//d.timestamp = d3.time.format.parse(d.timestamp);
+	console.log(d.timestamp);
     d.temp = +d.temp;
+	console.log(d.temp);
   });
 
-  x.domain(d3.extent(data, function(d) { return d.date; }));
+  x.domain(d3.extent(data, function(d) { return d.timestamp; }));
   y.domain(d3.extent(data, function(d) { return d.temp; }));
 
   svg.append("g")
@@ -98,7 +133,7 @@ d3.json("https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5.json", function(e
       .attr("y", 6)
       .attr("dy", ".71em")
       .style("text-anchor", "end")
-      .text("Price ($)");
+      .text("Temperature");
 
   svg.append("path")
       .datum(data)
@@ -108,19 +143,21 @@ d3.json("https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5.json", function(e
 
 </script>
 
-</div>
 
 
-      </section>
+
+
     </div>
 
     <!-- FOOTER  -->
+	<!--
     <div id="footer_wrap" class="outer">
       <footer class="inner">
         <p class="copyright">Gasbot maintained by <a href="https://github.com/mmighty">mmighty</a></p>
         <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
       </footer>
     </div>
+	-->
 
     
 
