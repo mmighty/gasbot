@@ -37,7 +37,7 @@
 <!-- MAX CODE HERE -->
 <div id="heatmap"></div>
 <div id="barchart"></div>
-
+<div id="test">
 
 <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
 <script type="text/javascript" src="js/d3/d3.js"></script>
@@ -50,7 +50,7 @@ var margin = {top: 20, right: 20, bottom: 30, left: 50},
     width = 960 - margin.left - margin.right,
     height = 500 - margin.top - margin.bottom;
 
-var parseDate = d3.time.format("%d-%b-%y").parse;
+var parseDate = d3.time.format("%Y-%m-%dT%H:%m:%S.%LZ").parse;
 
 var x = d3.time.scale()
     .range([0, width]);
@@ -68,9 +68,9 @@ var yAxis = d3.svg.axis()
 
 var line = d3.svg.line()
     .x(function(d) { return x(d.date); })
-    .y(function(d) { return y(d.close); });
+    .y(function(d) { return y(d.temp); });
 
-var svg = d3.select("test").append("svg")
+var svg = d3.select("body").append("svg")
     .attr("width", width + margin.left + margin.right)
     .attr("height", height + margin.top + margin.bottom)
   .append("g")
@@ -79,11 +79,11 @@ var svg = d3.select("test").append("svg")
 d3.json("https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5.json", function(error, data) {
   data.forEach(function(d) {
     d.date = parseDate(d.date);
-    d.close = +d.temp;
+    d.temp = +d.temp;
   });
 
   x.domain(d3.extent(data, function(d) { return d.date; }));
-  y.domain(d3.extent(data, function(d) { return d.close; }));
+  y.domain(d3.extent(data, function(d) { return d.temp; }));
 
   svg.append("g")
       .attr("class", "x axis")
@@ -108,7 +108,7 @@ d3.json("https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5.json", function(e
 
 </script>
 
-<div id="test"></div>
+</div>
 
 
       </section>
