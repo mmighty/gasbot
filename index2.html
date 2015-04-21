@@ -1,0 +1,165 @@
+<!DOCTYPE html>
+<html>
+
+  <head>
+    <meta charset='utf-8'>
+    <meta http-equiv="X-UA-Compatible" content="chrome=1">
+    <meta name="description" content="Gasbot : ">
+
+    <!--<link rel="stylesheet" type="text/css" media="screen" href="stylesheets/stylesheet.css">-->
+
+    <title>Gasbot</title>
+	
+	
+	<style>
+
+test {
+  font: 10px sans-serif;
+}
+
+.axis path,
+.axis line {
+  fill: none;
+  stroke: #000;
+  shape-rendering: crispEdges;
+}
+
+.x.axis path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke: steelblue;
+  stroke-width: 1.5px;
+}
+
+</style>
+
+  </head>
+
+  <body>
+  
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.2/jquery.min.js"></script>
+<script type="text/javascript" src="js/d3/d3.js"></script>
+<script type="text/javascript" src="js/crossfilter/crossfilter.js"></script>
+<script type="text/javascript" src="js/dc/dc.js"></script>
+
+    <!-- HEADER -->
+    <div id="header_wrap" class="outer">
+        <header class="inner">
+
+          <h1 id="project_title">Gasbot</h1>
+          <h2 id="project_tagline"></h2>
+
+
+        </header>
+    </div>
+
+    <!-- MAIN CONTENT -->
+    <div id="main_content_wrap" class="outer">
+      <section id="main_content" class="inner">
+	   </section>
+
+
+
+
+<!-- MAX CODE HERE -->
+<div id="heatmap"></div>
+<div id="barchart"></div>
+<div id="test">yes</div>
+
+
+
+
+<script>
+
+var margin = {top: 20, right: 20, bottom: 30, left: 50},
+    width = 960 - margin.left - margin.right,
+    height = 500 - margin.top - margin.bottom;
+
+//var parsetimestamp = d3.time.format("%Y-%m-%dT%H:%M:%SZ").parse();
+var parsetimestamp = d3.time.format("%Y-%m-%dT%H:%M:%SZ").parse;
+
+var x = d3.time.scale()
+    .range([0, width]);
+
+var y = d3.scale.linear()
+    .range([height, 0]);
+
+var xAxis = d3.svg.axis()
+    .scale(x)
+    .orient("bottom");
+
+var yAxis = d3.svg.axis()
+    .scale(y)
+    .orient("left");
+
+var line = d3.svg.line()
+    .x(function(d) { return x(d.timestamp); })
+    .y(function(d) { return y(d.temp); });
+
+var svg = d3.select("body").append("svg")
+    .attr("width", width + margin.left + margin.right)
+    .attr("height", height + margin.top + margin.bottom)
+  .append("g")
+    .attr("transform", "translate(" + margin.left + "," + margin.top + ")");
+
+d3.json("https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5.json", function(error, data) {
+  data.forEach(function(d) {
+	console.log("test");
+	console.log(Date.parse(d.timestamp));
+	d.timestamp = Date.parse(d.timestamp);
+    //d.timestamp = parsetimestamp(d.timestamp);
+	//d.timestamp = d3.time.format.parse(d.timestamp);
+	console.log(d.timestamp);
+    d.temp = +d.temp;
+	console.log(d.temp);
+  });
+
+  x.domain(d3.extent(data, function(d) { return d.timestamp; }));
+  y.domain(d3.extent(data, function(d) { return d.temp; }));
+
+  svg.append("g")
+      .attr("class", "x axis")
+      .attr("transform", "translate(0," + height + ")")
+      .call(xAxis);
+
+  svg.append("g")
+      .attr("class", "y axis")
+      .call(yAxis)
+    .append("text")
+      .attr("transform", "rotate(-90)")
+      .attr("y", 6)
+      .attr("dy", ".71em")
+      .style("text-anchor", "end")
+      .text("Temperature");
+
+  svg.append("path")
+      .datum(data)
+      .attr("class", "line")
+      .attr("d", line);
+});
+
+</script>
+
+
+
+
+
+    </div>
+
+    <!-- FOOTER  -->
+	<!--
+    <div id="footer_wrap" class="outer">
+      <footer class="inner">
+        <p class="copyright">Gasbot maintained by <a href="https://github.com/mmighty">mmighty</a></p>
+        <p>Published with <a href="https://pages.github.com">GitHub Pages</a></p>
+      </footer>
+    </div>
+	-->
+
+    
+
+  </body>
+</html>

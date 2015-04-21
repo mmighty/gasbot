@@ -88,8 +88,6 @@ d3.json("https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5?limit=30", functi
 
   });    
     
-    gdataT = gdataT.reverse();
-    
  var nvfdata = [
             {
                 //area: true,
@@ -118,7 +116,7 @@ d3.json("https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5?limit=30", functi
         chart.xAxis
             .axisLabel("Time")
             //.tickFormat(d3.format(',.1f'))
-            .tickFormat(function(d) {return d3.time.format('%m-%d-%y %H:%M')(new Date(d))})
+            .tickFormat(function(d) {return d3.time.format('%d-%m-%y')(new Date(d))})
             .staggerLabels(true)
         ;
         
@@ -126,66 +124,18 @@ d3.json("https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5?limit=30", functi
         
         chart.yAxis
             .axisLabel('Reading')
-            .tickFormat(d3.format(',.2f'))
+            //.tickFormat(d3.format(',.2f'))
         ;
         
         //console.log(gdata);
         d3.select('#chart1').append('svg')
             //.datum(sinAndCos())
             .datum(nvfdata)
-            .transition().duration(500)
             .call(chart);
         //console.log(gasData());
         nv.utils.windowResize(chart.update);
         return chart;
     });
-    
-    
-    
-    
-  var x = 2;
-  var x1 = (new Date).getTime();
-  var run = true;
-  //console.log(x1);
-  //console.log(nvfdata[0].values);
-
-
-  setInterval(function(){
-  
-  ////latest.json
-  
-	if (!run) return;
-	
-	
-	$.getJSON( "https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5/latest.json", function( json ) {
-	
-  console.log( Date.parse(json[0].timestamp));
-  console.log( (((+json[0].temp * 5)/1024)-0.5)*100 );  
-  
- //});
-	nvfdata[0].values.push({
-		//x: (new Date).getTime(),
-		x: Date.parse(json[0].timestamp),
-		//y: Math.random() * 100
-		
-		y: (((+json[0].temp * 5)/1024)-0.5)*100 
-	});
-	
-	});
-	if (nvfdata[0].values.length > 30) {
-		nvfdata[0].values.shift();
-	}
-	var x1 = (new Date).getTime();
-	chart.update();
-}, 9000);
-    
-    
-    
-    
-    
-    
-    
-    
     //function sinAndCos() {
     //var gdata = [];
 });
