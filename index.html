@@ -71,6 +71,8 @@
     // Wrapping in nv.addGraph allows for '0 timeout render', stores rendered charts in nv.graphs, and may do more in the future... it's NOT required
  var gdataT = [];
  var gdataA = [];
+ var gdataL = [];
+ var gdataM = [];
     
 d3.json("https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5?limit=30", function(error, data) {
   data.forEach(function(d) {
@@ -82,13 +84,27 @@ d3.json("https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5?limit=30", functi
 	//console.log(d.timestamp);
 	d.temp = +d.temp;
 	d.alch = +d.alcohol;
-	//console.log(d.temp);
-	gdataT.push({x:d.timestamp, y:(((d.temp * 5)/1024)-0.5)*100});
-	gdataA.push({x:d.timestamp, y:d.alch});
+	d.lpg = +d.lpg;
+	d.meth = +d.methane;
+	//console.log(d.board);
+	if (d.board == "RED"){
+	  console.log("using red converion");
+	  gdataT.push({x:d.timestamp, y:convertTempRed(+d.temp)});
+	}
+	else{
+	  console.log("using blue conversion");
+	  gdataT.push({x:d.timestamp, y:convertTempBlue(+d.temp)});
+	}
+	gdataA.push({x:d.timestamp, y:+d.alch});
+	gdataL.push({x:d.timestamp, y:+d.lpg});
+	gdataM.push({x:d.timestamp, y:+d.meth});
 
   });    
     
     gdataT = gdataT.reverse();
+    gdataA = gdataA.reverse();
+    gdataL = gdataL.reverse();
+    gdataM = gdataM.reverse();
     
  var nvfdata = [
             {
@@ -102,6 +118,18 @@ d3.json("https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5?limit=30", functi
                 values: gdataA,
                 key: "Alcohol",
                 color: "#2ca02c"
+            },
+             {
+                //area: true,
+                values: gdataL,
+                key: "LPG",
+                color: "#0066FF"
+            },
+            {
+                //area: true,
+                values: gdataM,
+                key: "Methane",
+                color: "#CC33FF"
             }
             
             ];    
@@ -160,20 +188,61 @@ d3.json("https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5?limit=30", functi
 	$.getJSON( "https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5/latest.json", function( json ) {
 	
   console.log( Date.parse(json[0].timestamp));
-  console.log( (((+json[0].temp * 5)/1024)-0.5)*100 );  
+  console.log( "Adding temp: " + String(convertTempRed(+json[0].temp) ));  
   
  //});
-	nvfdata[0].values.push({
-		//x: (new Date).getTime(),
-		x: Date.parse(json[0].timestamp),
-		//y: Math.random() * 100
-		
-		y: (((+json[0].temp * 5)/1024)-0.5)*100 
-	});
+	  if (json[0].board == "RED"){
+	    nvfdata[0].values.push({
+		    //x: (new Date).getTime(),
+		    x: Date.parse(json[0].timestamp),
+		    //y: Math.random() * 100
+		    
+		    y: convertTempRed(+json[0].temp)
+	    });
+	  }
+	  else{
+	    nvfdata[0].values.push({
+		      //x: (new Date).getTime(),
+		      x: Date.parse(json[0].timestamp),
+		      //y: Math.random() * 100
+		      
+		      y: convertTempBlue(+json[0].temp)
+	      });
+	  }
+	  
+	  nvfdata[1].values.push({
+		  //x: (new Date).getTime(),
+		  x: Date.parse(json[0].timestamp),
+		  //y: Math.random() * 100
+		  
+		  y: +json[0].alcohol
+	  });
+	  
+	  nvfdata[2].values.push({
+		  //x: (new Date).getTime(),
+		  x: Date.parse(json[0].timestamp),
+		  //y: Math.random() * 100
+		  
+		  y: +json[0].lpg
+	  });
+	  
+	  nvfdata[3].values.push({
+		  //x: (new Date).getTime(),
+		  x: Date.parse(json[0].timestamp),
+		  //y: Math.random() * 100
+		  
+		  y: +json[0].methane
+	  });
+	  
+	 
 	
 	});
-	if (nvfdata[0].values.length > 30) {
-		nvfdata[0].values.shift();
+
+	for (var i = 0; i < nvfdata.length; i++){
+	
+	  if (nvfdata[i].values.length > 30) {
+		  nvfdata[i].values.shift();
+	  }
 	}
 	var x1 = (new Date).getTime();
 	chart.update();
@@ -182,12 +251,26 @@ d3.json("https://data.sparkfun.com/output/9Jjp2qJQ5JuW7vWDZjM5?limit=30", functi
     
     
     
+function convertTempRed(val) {
+    //in dec C
+    val = (val*(4000/1024)-500)/10;
+    
+    //in deg F
+    val = (val  * 9/5)+32;
+    return val;
+    }
+    
+function convertTempBlue(val) {
+    //in dec C
+    val = (val*(4000/1024)-500)/10;
+    
+    //in deg F
+    val = (val  * 9/5)+32;
+    return val;
+    }
     
     
-    
-    
-    //function sinAndCos() {
-    //var gdata = [];
+
 });
 </script>
 
